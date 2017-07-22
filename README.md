@@ -20,16 +20,19 @@ Role Variables
     gogland_plugin_download_mirror: "https://plugins.jetbrains.com/plugin/download?updateId="
     gogland_plugins: []
     gogland_download_directory: /tmp
-    gogland_install_directory: "{{ ansible_env['HOME'] }}/Tools"
+    gogland_user_dir: "~{{ (gogland_install_user is defined) | ternary(gogland_install_user, ansible_user_id) }}"
+    gogland_install_directory: "{{ gogland_user_dir | expanduser  }}/Tools"
+    gogland_install_user: <undefined>
 
     # calculated
     gogland_install_file: "gogland-{{ gogland_version }}.tar.gz"
     gogland_download_url: "{{ gogland_download_mirror }}{{ gogland_install_file }}"
     gogland_location: "{{ gogland_install_directory }}/Gogland-{{ gogland_version }}"
-    gogland_desktop_file_location: "{{ ansible_env['HOME'] }}/.local/share/applications/gogland-{{ gogland_version }}.desktop"
+    gogland_desktop_file_location: "{{ gogland_user_dir | expanduser  }}/.local/share/applications/gogland-{{ gogland_version }}.desktop"
 
 
-gogland_plugins is a list of names which get appended to gogland_plugin_download_mirror to form a full download  
+* gogland_plugins is a list of names which get appended to gogland_plugin_download_mirror to form a full download
+* Defining gogland_install_user allows the role to install under a different user, however become is required 
 
 
 Dependencies
@@ -78,4 +81,5 @@ MIT
 Change log
 ----------
 
+* 1.1: Allow installation under another user
 * 1.0: Initial version

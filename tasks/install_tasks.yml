@@ -21,7 +21,7 @@
   get_url:
     url: "{{ gogland_plugin_download_mirror }}{{ item }}"
     dest: "{{ gogland_download_directory }}"
-  register: gogland_plugins
+  register: gogland_plugins_downloaded
   with_items: "{{ gogland_plugins }}"
 
 - name: Install Gogland
@@ -35,7 +35,7 @@
   unarchive:
     src: "{{ item.dest }}"
     dest: "{{ gogland_location }}/plugins"
-  with_items: "{{ gogland_plugins.results }}"
+  with_items: "{{ gogland_plugins_downloaded.results }}"
 
 - name: Create Gogland desktop entry
   template:
