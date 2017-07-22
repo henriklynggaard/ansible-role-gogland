@@ -1,43 +1,8 @@
 ---
-# tasks file for pycharm
 
-- name: install tar on Fedora 24
-  dnf:
-    name: tar
-    state: present
-  when: ansible_distribution == "Fedora" and ansible_distribution_major_version == "24"
+- include: install_tasks.yml
+  become_user: "{{ gogland_install_user}}"
+  when: gogland_install_user is defined
 
-- name: Create directories for Gogland
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-  - "{{ gogland_download_directory }}"
-  - "{{ gogland_install_directory }}"
-  - "{{ gogland_desktop_file_location | dirname }}"
-
-
-- name: Download Gogland plugins
-  get_url:
-    url: "{{ gogland_plugin_download_mirror }}{{ item }}"
-    dest: "{{ gogland_download_directory }}"
-  register: gogland_plugins
-  with_items: "{{ gogland_plugins }}"
-
-- name: Install Gogland
-  unarchive:
-    copy: no
-    src: "{{ gogland_download_url}}"
-    dest: "{{ gogland_install_directory }}"
-    creates: "{{ gogland_location }}/bin/gogland.sh"
-
-- name: Install Gogland Plugins
-  unarchive:
-    src: "{{ item.dest }}"
-    dest: "{{ gogland_location }}/plugins"
-  with_items: "{{ gogland_plugins.results }}"
-
-- name: Create Gogland desktop entry
-  template:
-    src: gogland.desktop.j2
-    dest: "{{ gogland_desktop_file_location }}"
+- include: install_tasks.yml
+  when: gogland_install_user is not defined
